@@ -6,10 +6,26 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "yuandana",
-  "license": "ISC",
+  "bin": {
+    "react": "bin/react.js"
+  },
+  "keywords": [
+    "react",
+    "cli"
+  ],
+  "author": "mazhenyu@yuandana.com",
+  "license": "MIT",
   "gitHead": "793a44c6337332bec59f65acdb982b37d3c3a07f",
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "commander": "^3.0.2",
+    "minimist": "^1.2.0",
+    "semver": "^6.3.0"
+  },
+  "engines": {
+    "node": ">=8.9"
   }
 }
