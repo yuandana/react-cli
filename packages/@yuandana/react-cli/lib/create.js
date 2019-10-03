@@ -1,3 +1,14 @@
+const fs = require('fs-extra');
+const path = require('path');
+const inquirer = require('inquirer');
+const chalk = require('chalk');
+const {
+    error,
+    stopSpinner,
+    clearConsole
+} = require('@yuandana/react-cli-shared-utils');
+const ProjectGenerator = require('./project-generator');
+
 /**
  * 项目创建函数
  *
@@ -8,14 +19,13 @@ async function create(projectName, options) {
     const cwd = options.cwd || process.cwd();
     const inCurrent = projectName === '.';
     const name = inCurrent ? path.relative('../', cwd) : projectName;
-    console.log('TCL: create -> name', name);
     const targetDir = path.resolve(cwd, projectName || '.');
 
     if (fs.existsSync(targetDir)) {
         if (options.force) {
             await fs.remove(targetDir);
         } else {
-            // await clearConsole();
+            await clearConsole();
             if (inCurrent) {
                 const { ok } = await inquirer.prompt([
                     {
@@ -51,6 +61,9 @@ async function create(projectName, options) {
             }
         }
     }
+
+    const projectGenerator = new ProjectGenerator(name, targetDir);
+    projectGenerator.create(options);
 }
 
 module.exports = (...args) => {

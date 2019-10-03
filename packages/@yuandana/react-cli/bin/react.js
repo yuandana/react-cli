@@ -62,7 +62,7 @@ const minimist = require('minimist');
 program.version(require('../package').version).usage('<command> [options]');
 
 program
-    .command('create <app-name>')
+    .command('create <project-name>')
     .description('create a new project powered by react-cli-service')
     // .option('-p, --preset <presetName>', 'Skip prompts and use saved or remote preset')
     // .option('-d, --default', 'Skip prompts and use default preset')
