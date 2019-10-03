@@ -55,7 +55,7 @@ async function create(projectName, options) {
                 if (!action) {
                     return;
                 } else if (action === 'overwrite') {
-                    console.log(`\nRemoving ${chalk.cyan(targetDir)}...`);
+                    console.log(`Removing ${chalk.cyan(targetDir)}...`);
                     await fs.remove(targetDir);
                 }
             }

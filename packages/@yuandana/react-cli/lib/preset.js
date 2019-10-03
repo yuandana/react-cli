@@ -37,7 +37,6 @@ const resolveLocalOrRemotePreset = presetArgs => {
 const promptAndResolvePreset = async () => {
     const prompt = new Prompt();
     const preset = await prompt.resolvePresetByPrompts();
-    console.log('TCL: promptAndResolvePreset -> preset', preset);
     return preset;
 };
 
@@ -56,7 +55,6 @@ exports.defaultPreset = {
 };
 
 exports.resolvePreset = async cliOptions => {
-    console.log('TCL: cliOptions', cliOptions);
     let preset;
     // 如果命令行参数重指定了 preset
     // react create hello-word --preset [some-preset]

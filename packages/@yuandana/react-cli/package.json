@@ -1,41 +1,42 @@
 {
-  "name": "@yuandana/react-cli",
-  "version": "1.0.1-alpha.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "bin": {
-    "react": "bin/react.js"
-  },
-  "keywords": [
-    "react",
-    "cli"
-  ],
-  "author": "mazhenyu@yuandana.com",
-  "license": "MIT",
-  "gitHead": "793a44c6337332bec59f65acdb982b37d3c3a07f",
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@yuandana/react-cli-shared-utils": "^1.0.1-alpha.0",
-    "chalk": "^2.4.2",
-    "commander": "^3.0.2",
-    "debug": "^4.1.1",
-    "execa": "^2.0.4",
-    "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.0",
-    "joi": "^14.3.1",
-    "lru-cache": "^5.1.1",
-    "minimist": "^1.2.0",
-    "ora": "^4.0.1",
-    "semver": "^6.3.0",
-    "slash": "^3.0.0",
-    "string.prototype.padstart": "^3.0.0"
-  },
-  "engines": {
-    "node": ">=8.9"
-  }
+    "name": "@yuandana/react-cli",
+    "version": "1.0.1-alpha.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "bin": {
+        "react": "bin/react.js"
+    },
+    "keywords": [
+        "react",
+        "cli"
+    ],
+    "author": "mazhenyu@yuandana.com",
+    "license": "MIT",
+    "gitHead": "793a44c6337332bec59f65acdb982b37d3c3a07f",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@yuandana/react-cli-shared-utils": "^1.0.1-alpha.0",
+        "chalk": "^2.4.2",
+        "commander": "^3.0.2",
+        "cross-spawn": "^7.0.0",
+        "debug": "^4.1.1",
+        "deepmerge": "^4.0.0",
+        "fs-extra": "^8.1.0",
+        "inquirer": "^7.0.0",
+        "joi": "^14.3.1",
+        "lru-cache": "^5.1.1",
+        "minimist": "^1.2.0",
+        "ora": "^4.0.1",
+        "semver": "^6.3.0",
+        "slash": "^3.0.0",
+        "string.prototype.padstart": "^3.0.0"
+    },
+    "engines": {
+        "node": ">=8.9"
+    }
 }

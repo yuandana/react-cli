@@ -2,17 +2,19 @@ const chalk = require('chalk');
 const semver = require('semver');
 const fs = require('fs-extra');
 const debug = require('debug');
-const normalizeFilePaths = require('./util/normalize-file-paths');
-const writeFileTree = require('./util/write-file-tree');
-const sortObject = require('./util/sort-object');
-const { resolvePreset } = require('./preset');
 const {
     clearConsole,
     logWithSpinner,
     log,
     stopSpinner,
-    hasYarn
+    hasYarn,
+    loadModule
 } = require('@yuandana/react-cli-shared-utils');
+const normalizeFilePaths = require('./util/normalize-file-paths');
+const writeFileTree = require('./util/write-file-tree');
+const sortObject = require('./util/sort-object');
+const { resolvePreset } = require('./preset');
+const PluginGeneratorAPI = require('./plugin-generator-api');
 const { loadLocalConfig } = require('./local-config');
 const { installDeps } = require('./util/install-deps');
 
@@ -38,9 +40,8 @@ class ProjectGenerator {
         this.name = name;
         this.context = context;
         this.files = {};
-        // files = {
-        //    [fileName]: fileContent
-        // }
+        // plugin 会通过 PluginGeneratorApi 类操作 this.pkg
+        this.pkg = {};
     }
 
     async create(cliOptions = {}, preset = null) {
@@ -59,12 +60,11 @@ class ProjectGenerator {
         await clearConsole();
 
         // 根据用户选项结果组织 pkg 对象
-        const pkg = await this.resolvePkg(this.name, preset);
+        this.pkg = await this.resolvePkg(this.name, preset);
 
-        // 根据 pkg 对象 及 preset 组织文件对象
-        const files = this.resolveFiles(pkg, preset);
+        //根据 pkg 对象 及 preset 组织文件对象
+        const files = this.resolveFiles(this.pkg, preset);
 
-        // 写入文件
         logWithSpinner(
             `✨`,
             `Creating project in ${chalk.yellow(this.context)}.`
@@ -78,20 +78,47 @@ class ProjectGenerator {
         try {
             // 创建文件夹（同步）
             fs.mkdirsSync(this.context);
-            // 书写文件树
-            await writeFileTree(this.context, files);
-            await installDeps(
-                this.context,
-                packageManager,
-                cliOptions.registry
-            );
+            // 生成 package.json 文件用于安装依赖 plugins
+            await writeFileTree(this.context, {
+                ['package.json']: JSON.stringify(this.pkg, null, 2) + '\n'
+            });
         } catch (error) {
             stopSpinner();
             log(error);
         }
-        // 创建文件夹
-        // 写入 package.json
+
+        // install
         stopSpinner();
+        log(`Installing CLI plugins. This might take a while...`);
+        log();
+        await installDeps(this.context, packageManager, cliOptions.registry);
+
+        // 调用 plugins 里的 generator 逻辑生成配置文件
+        log();
+        log(`Invoking generators...`);
+        const plugins = await this.resolvePlugins(preset.plugins);
+        console.log('TCL: ProjectGenerator -> create -> plugins', plugins);
+
+        // apply generators from plugins
+        plugins.forEach(({ id, apply, options }) => {
+            const api = new PluginGeneratorAPI(id, this, options);
+            apply(api, options);
+            console.log(
+                'TCL: ProjectGenerator -> create -> apply',
+                apply.toString()
+            );
+        });
+        console.log('TCL: this.pkg', this.pkg);
+        if (preset.useConfigFiles) {
+            this.extractConfigFiles();
+        }
+        await writeFileTree(this.context, {
+            ['package.json']: JSON.stringify(this.pkg, null, 2) + '\n'
+        });
+    }
+
+    extractConfigFiles() {
+        // todo something to this.files
     }
 
     getVersions() {
@@ -116,6 +143,29 @@ class ProjectGenerator {
         };
     }
 
+    async resolvePlugins(plugins = []) {
+        const resultPlugins = [];
+        for (const id of Object.keys(plugins)) {
+            const apply =
+                loadModule(`${id}/generator`, this.context) || (() => {});
+            let options = plugins[id] || {};
+            if (options.prompts) {
+                const prompts = loadModule(`${id}/prompts`, this.context);
+                if (prompts) {
+                    log();
+                    log(
+                        `${chalk.cyan(
+                            options._isPreset ? `Preset options:` : id
+                        )}`
+                    );
+                    options = await inquirer.prompt(prompts);
+                }
+            }
+            resultPlugins.push({ id, apply, options });
+        }
+        return resultPlugins;
+    }
+
     resolveFiles(pkg, preset = {}) {
         const files = {};
         files['package.json'] = JSON.stringify(pkg, null, 2) + '\n';
@@ -131,6 +181,8 @@ class ProjectGenerator {
             name,
             version: '0.1.0',
             private: true,
+            description: '',
+            author: '',
             devDependencies: {
                 '@yuandana/react-cli-service': 'latest'
             },
@@ -158,11 +210,11 @@ class ProjectGenerator {
         pkg.devDependencies = sortObject(pkg.devDependencies);
         pkg.scripts = sortObject(pkg.scripts, [
             'serve',
-            'build',
-            'test',
-            'e2e',
-            'lint',
-            'deploy'
+            'build'
+            // 'test',
+            // 'e2e',
+            // 'lint',
+            // 'deploy'
         ]);
         pkg = sortObject(pkg, [
             'name',
@@ -173,13 +225,13 @@ class ProjectGenerator {
             'scripts',
             'dependencies',
             'devDependencies',
-            'vue',
-            'babel',
-            'eslintConfig',
-            'prettier',
-            'postcss',
-            'browserslist',
-            'jest'
+            // 'vue',
+            'babel'
+            // 'eslintConfig',
+            // 'prettier',
+            // 'postcss',
+            // 'browserslist',
+            // 'jest'
         ]);
 
         debug('react:cli-pkg')(pkg);

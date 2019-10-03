@@ -46,7 +46,7 @@ class Prompt {
     async resolvePresetByPrompts() {
         const promptModules = getPromptModules();
         const promptApi = new PromptApi(this);
-        // 利用 promptApi 将prompt注册到 this.registerPrompts上
+        // 利用 promptApi 将prompt注册到 this 上
         promptModules.forEach(m => m(promptApi));
         const answers = await inquirer.prompt(this.resolveFinalPrompts());
         // 调用所有可配置的prompt callBack 得到preset

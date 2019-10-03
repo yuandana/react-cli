@@ -1,4 +1,4 @@
-['env', 'logger', 'spinner', 'console', 'validate'].forEach(m => {
+['env', 'logger', 'spinner', 'console', 'validate', 'module'].forEach(m => {
     Object.assign(exports, require(`./lib/${m}`));
 });
 

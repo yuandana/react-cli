@@ -1,8 +1,16 @@
 {
     "name": "@yuandana/react-cli-plugin-babel",
     "version": "1.0.1-alpha.0",
-    "description": "",
+    "description": "babel plugin for react-cli",
     "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/yuandana/react-cli.git",
+        "directory": "packages/@yuandana/react-cli-plugin-babel"
+    },
+    "bugs": {
+        "url": "https://github.com/yuandana/react-cli/issues"
+    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -10,5 +18,10 @@
     "license": "MIT",
     "publishConfig": {
         "access": "public"
+    },
+    "dependencies": {
+        "@babel/core": "^7.6.2",
+        "babel-loader": "^8.0.6",
+        "babel-preset-react-app": "^9.0.2"
     }
 }
