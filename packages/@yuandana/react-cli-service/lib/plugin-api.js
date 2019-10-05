@@ -2,7 +2,7 @@ const path = require('path');
 const hash = require('hash-sum');
 const { matchesPluginId } = require('@yuandana/react-cli-shared-utils');
 
-class PluginApi {
+class PluginAPI {
     /**
      * @param {string} id - Id of the plugin.
      * @param {Service} service - A vue-cli-service instance.

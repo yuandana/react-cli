@@ -3,6 +3,7 @@ node_modules
 design
 *.log
 packages/test
+packages/*/test
 dist
 temp
 .version
