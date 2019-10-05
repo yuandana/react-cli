@@ -1,6 +1,6 @@
 {
     "name": "@yuandana/react-cli-service",
-    "version": "1.0.1-alpha.3",
+    "version": "1.0.1-alpha.4",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -19,7 +19,7 @@
         "access": "public"
     },
     "dependencies": {
-        "@yuandana/react-cli-shared-utils": "^1.0.1-alpha.3",
+        "@yuandana/react-cli-shared-utils": "^1.0.1-alpha.4",
         "address": "^1.1.2",
         "detect-port-alt": "^1.1.6",
         "fork-ts-checker-webpack-plugin": "^1.5.0",
