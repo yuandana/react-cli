@@ -8,7 +8,8 @@ const {
     log,
     stopSpinner,
     hasYarn,
-    loadModule
+    loadModule,
+    exit
 } = require('@yuandana/react-cli-shared-utils');
 const normalizeFilePaths = require('./util/normalize-file-paths');
 const writeFileTree = require('./util/write-file-tree');
@@ -97,7 +98,6 @@ class ProjectGenerator {
         log();
         log(`Invoking generators...`);
         const plugins = await this.resolvePlugins(preset.plugins);
-
         // apply generators from plugins
         plugins.forEach(({ id, apply, options }) => {
             const api = new PluginGeneratorAPI(id, this, options);
@@ -109,6 +109,7 @@ class ProjectGenerator {
         await writeFileTree(this.context, {
             ['package.json']: JSON.stringify(this.pkg, null, 2) + '\n'
         });
+        process.exit(1);
     }
 
     extractConfigFiles() {
