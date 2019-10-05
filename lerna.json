@@ -1,6 +1,9 @@
 {
-  "packages": [
-    "packages/@yuandana/*"
-  ],
-  "version": "independent"
+    "packages": ["packages/@yuandana/*"],
+    "command": {
+        "bootstrap": {
+            "hoist": true
+        }
+    },
+    "version": "independent"
 }
