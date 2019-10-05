@@ -3,7 +3,7 @@ const path = require('path');
 const readPkg = require('read-pkg');
 const merge = require('webpack-merge');
 const Config = require('webpack-chain');
-const { warn, isPlugin } = require('@yuandana/react-cli-shared-utils');
+const { warn, error, isPlugin } = require('@yuandana/react-cli-shared-utils');
 const PluginAPI = require('./plugin-api');
 const { builtInPlugins, idToPlugin } = require('./build-in-plugins');
 
@@ -61,6 +61,7 @@ class Service {
         this.initialized = true;
         // apply plugins.
         this.plugins.forEach(({ id, apply }) => {
+            console.log('TCL: init -> this.plugins', this.plugins);
             apply(new PluginAPI(id, this), this.projectOptions);
         });
     }
@@ -94,7 +95,7 @@ class Service {
                     return idToPlugin(id);
                 }
             });
-        plugins = builtInPlugins.concat(projectPlugins);
+        return builtInPlugins.concat(projectPlugins);
     }
 
     resolveChainableWebpackConfig() {

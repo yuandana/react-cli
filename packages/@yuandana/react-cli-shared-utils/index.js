@@ -5,7 +5,9 @@
     'console',
     'validate',
     'module',
-    'open-browser'
+    'open-browser',
+    'plugin',
+    'browser'
 ].forEach(m => {
     Object.assign(exports, require(`./lib/${m}`));
 });

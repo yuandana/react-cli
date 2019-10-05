@@ -21,7 +21,9 @@
     },
     "dependencies": {
         "@babel/core": "^7.6.2",
+        "@yuandana/react-cli-shared-utils": "^1.0.1-alpha.3",
         "babel-loader": "^8.0.6",
+        "babel-plugin-named-asset-import": "^0.3.4",
         "babel-preset-react-app": "^9.0.2"
     }
 }

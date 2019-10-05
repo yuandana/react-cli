@@ -20,9 +20,16 @@
     },
     "dependencies": {
         "@yuandana/react-cli-shared-utils": "^1.0.1-alpha.3",
+        "address": "^1.1.2",
+        "detect-port-alt": "^1.1.6",
+        "fork-ts-checker-webpack-plugin": "^1.5.0",
         "hash-sum": "^2.0.0",
+        "is-root": "^2.1.0",
         "read-pkg": "^5.2.0",
+        "shell-quote": "^1.7.2",
+        "webpack": "^4.41.0",
         "webpack-chain": "^6.0.0",
+        "webpack-dev-server": "^3.8.2",
         "webpack-merge": "^4.2.2"
     },
     "engines": {

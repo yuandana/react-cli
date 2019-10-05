@@ -1,8 +1,12 @@
+const paths = require('../paths');
+
 const idToPlugin = id => ({
-    id,
-    apply: require(id)
+    id: id.replace(/^.\//, 'built-in:'),
+    apply: require(`${
+        id.indexOf('./') === 0 ? id : paths.appNodeModules + '/' + id
+    }`)
 });
-const builtInPluginList = ['start', 'build'];
+const builtInPluginList = ['./base-webpack-config', './start', './build'];
 
 exports.builtInPlugins = builtInPluginList.map(idToPlugin);
 exports.idToPlugin = idToPlugin;
