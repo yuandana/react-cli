@@ -39,7 +39,6 @@ const resolve = semver.satisfies(process.version, '>=10.0.0')
 exports.resolveModule = function(request, context) {
     let resolvedPath;
     try {
-        console.log('TCL:----', semver.satisfies(process.version, '>=10.0.0'));
         resolvedPath = resolve(request, {
             paths: [context]
         });
@@ -48,10 +47,7 @@ exports.resolveModule = function(request, context) {
 };
 
 exports.loadModule = function(request, context, force = false) {
-    console.log('TCL: exports.loadModule -> context', context);
-    console.log('TCL: exports.loadModule -> request', request);
     const resolvedPath = exports.resolveModule(request, context);
-    console.log('TCL: exports.loadModule -> resolvedPath', resolvedPath);
     if (resolvedPath) {
         if (force) {
             clearRequireCache(resolvedPath);

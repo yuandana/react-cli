@@ -6,4 +6,8 @@ module.exports = pluginApi => {
             presets: ['react-app']
         }
     });
+
+    // pluginApi.fileConfig({
+    //     js: ['babel.config.js']
+    // });
 };

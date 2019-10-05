@@ -21,16 +21,8 @@ class PluginGeneratorApi {
      * @param {object | () => object} fields - Fields to merge.
      */
     extendPackage(fields) {
-        console.log(
-            'TCL: PluginGeneratorApi -> extendPackage -> fields',
-            fields
-        );
         const pkg = this.projectGenerator.pkg;
         const toMerge = isFunction(fields) ? fields(pkg) : fields;
-        console.log(
-            'TCL: PluginGeneratorApi -> extendPackage -> toMerge',
-            toMerge
-        );
         for (const key in toMerge) {
             const value = toMerge[key];
             const existing = pkg[key];

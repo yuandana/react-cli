@@ -28,10 +28,8 @@
         "deepmerge": "^4.0.0",
         "fs-extra": "^8.1.0",
         "inquirer": "^7.0.0",
-        "joi": "^14.3.1",
         "lru-cache": "^5.1.1",
         "minimist": "^1.2.0",
-        "ora": "^4.0.1",
         "semver": "^6.3.0",
         "slash": "^3.0.0",
         "string.prototype.padstart": "^3.0.0"

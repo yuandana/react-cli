@@ -97,18 +97,12 @@ class ProjectGenerator {
         log();
         log(`Invoking generators...`);
         const plugins = await this.resolvePlugins(preset.plugins);
-        console.log('TCL: ProjectGenerator -> create -> plugins', plugins);
 
         // apply generators from plugins
         plugins.forEach(({ id, apply, options }) => {
             const api = new PluginGeneratorAPI(id, this, options);
             apply(api, options);
-            console.log(
-                'TCL: ProjectGenerator -> create -> apply',
-                apply.toString()
-            );
         });
-        console.log('TCL: this.pkg', this.pkg);
         if (preset.useConfigFiles) {
             this.extractConfigFiles();
         }
@@ -187,7 +181,8 @@ class ProjectGenerator {
                 '@yuandana/react-cli-service': 'latest'
             },
             dependencies: {
-                react: 'latest'
+                react: 'latest',
+                'react-dom': 'latest'
             }
         };
 
