@@ -2,8 +2,8 @@ node_modules
 .DS_Store
 design
 *.log
-packages/test
-packages/*/test
+packages/test*
+packages/*/test*
 dist
 temp
 .version
