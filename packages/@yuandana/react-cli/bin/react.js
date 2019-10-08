@@ -77,7 +77,6 @@ program
     // .option('-b, --bare', 'Scaffold project without beginner instructions')
     .action((name, cmd) => {
         const options = cleanArgs(cmd);
-        console.log('TCL: options', options);
 
         if (minimist(process.argv.slice(3))._.length > 1) {
             console.log(
