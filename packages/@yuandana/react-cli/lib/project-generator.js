@@ -61,7 +61,6 @@ class ProjectGenerator {
         if (!preset) {
             preset = await resolvePreset(this.name, cliOptions);
         }
-        console.info(`-------------------(1)`);
         // 第二步
         // 根据 preset 组织 package.json
         // 写入文件夹
@@ -85,7 +84,6 @@ class ProjectGenerator {
             log(error);
         }
         stopSpinner();
-        console.info(`-------------------(2)`);
 
         // 第三步
         // 在创建的文件夹中执行 npm install || yarn 来安装所有依赖
@@ -95,7 +93,6 @@ class ProjectGenerator {
             (hasYarn() ? 'yarn' : 'npm');
         info(`Installing CLI plugins. This might take a while...`);
         await installDeps(this.context, packageManager, cliOptions.registry);
-        console.info(`-------------------(3)`);
 
         // 第四步
         // 获取所有安装的 plugins
@@ -113,7 +110,6 @@ class ProjectGenerator {
         // 并将文件注入到虚拟文件树 this.files 上
         await this.resolveFiles(preset);
         stopSpinner();
-        console.info(`-------------------(4)`);
 
         // 第五步
         // 如果创建时 用户选择了 preset.userConfigFiles
@@ -122,7 +118,6 @@ class ProjectGenerator {
             this.extractConfigFiles();
         }
         stopSpinner();
-        console.info(`-------------------(5)`);
 
         // 最后
         // 生成所有文件

@@ -1,4 +1,8 @@
 const merge = require('deepmerge');
+const path = require('path');
+const fs = require('fs-extra');
+const ejs = require('ejs');
+const { isBinaryFileSync } = require('isbinaryfile');
 const mergeDeps = require('./util/merge-deps');
 
 const isString = val => typeof val === 'string';
@@ -18,7 +22,7 @@ function extractCallDir() {
 
 const replaceBlockRE = /<%# REPLACE %>([^]*?)<%# END_REPLACE %>/g;
 function renderFile(name, data, ejsOptions) {
-    if (isBinary.sync(name)) {
+    if (isBinaryFileSync(name)) {
         return fs.readFileSync(name); // return buffer
     }
     const template = fs.readFileSync(name, 'utf-8');
@@ -203,7 +207,7 @@ class ProjectGeneratorApi {
      *   virtual files tree object, and an ejs render function. Can be async.
      */
     _injectFileMiddleware(middleware) {
-        this.generator.fileMiddlewares.push(middleware);
+        this.projectGenerator.fileMiddlewares.push(middleware);
     }
 
     /**

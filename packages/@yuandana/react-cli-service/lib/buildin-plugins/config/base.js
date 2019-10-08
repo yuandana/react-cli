@@ -52,12 +52,6 @@ module.exports = api => {
         //         name: 'static/media/[name].[hash:8].[ext]'
         //     })
         //     .end();
-        webpackChainConfig.merge({
-            module: {
-                strictExportPresence: true
-            }
-        });
-
         webpackChainConfig
             .plugin('html-webpack-plugin')
             .use(require.resolve('html-webpack-plugin'), [
@@ -65,6 +59,13 @@ module.exports = api => {
                     inject: true,
                     template: paths.appHtml
                 }
-            ]);
+            ])
+            .end();
+
+        webpackChainConfig.merge({
+            module: {
+                strictExportPresence: true
+            }
+        });
     });
 };

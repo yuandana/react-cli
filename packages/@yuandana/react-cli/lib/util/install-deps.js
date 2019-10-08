@@ -1,5 +1,6 @@
 const EventEmitter = require('events');
 const spawn = require('cross-spawn');
+// const execa = require('execa');
 const supportPkgManagerList = ['npm', 'yarn'];
 
 function checkPackageManagerIsSupported(pkgManager) {
@@ -41,7 +42,7 @@ const progress = (exports.progress = new InstallProgress());
 
 function executeCommand(command, args, targetDir) {
     return new Promise((resolve, reject) => {
-        const apiMode = process.env.REACt_CLI_API_MODE;
+        const apiMode = process.env.REACT_CLI_API_MODE;
 
         progress.enabled = false;
 
@@ -69,6 +70,8 @@ function executeCommand(command, args, targetDir) {
             }
             resolve();
         });
+
+        child.on('exit', code => {});
     });
 }
 
