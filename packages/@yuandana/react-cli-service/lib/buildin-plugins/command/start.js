@@ -22,6 +22,9 @@ const DEFAULT_OPTIONS = {
     HTTPS: false
 };
 
+process.env.BABEL_ENV = 'development';
+process.env.NODE_ENV = 'development';
+
 module.exports = (api, projectOptions) => {
     api.registerCommand(
         'start',
@@ -32,9 +35,9 @@ module.exports = (api, projectOptions) => {
                 '--open': `open browser on server start`,
                 '--copy': `copy url to clipboard on server start`,
                 '--mode': `specify env mode (default: development)`,
-                '--host': `specify host (default: ${DEFAULT_OPTIONS.host})`,
-                '--port': `specify port (default: ${DEFAULT_OPTIONS.port})`,
-                '--https': `use https (default: ${DEFAULT_OPTIONS.https})`,
+                '--host': `specify host (default: ${DEFAULT_OPTIONS.HOST})`,
+                '--port': `specify port (default: ${DEFAULT_OPTIONS.PORT})`,
+                '--https': `use https (default: ${DEFAULT_OPTIONS.HTTPS})`,
                 '--public': `specify the public network URL for the HMR client`
             }
         },
@@ -46,13 +49,13 @@ module.exports = (api, projectOptions) => {
                     // We attempt to use the default port but if it is busy, we offer the user to
                     // run on a different port. `choosePort()` Promise resolves to the next free port.
                     return choosePort(
-                        DEFAULT_OPTIONS.host,
-                        DEFAULT_OPTIONS.port
+                        DEFAULT_OPTIONS.HOST,
+                        DEFAULT_OPTIONS.PORT
                     );
                 })
                 .then(() => {
                     const config = api.resolveWebpackConfig();
-                    console.log('TCL: config', JSON.stringify(config));
+                    console.dir(config, { depth: null });
 
                     const protocol =
                         process.env.HTTPS === 'true' ? 'https' : 'http';
@@ -64,8 +67,8 @@ module.exports = (api, projectOptions) => {
                         process.env.TSC_COMPILE_ON_ERROR === 'true';
                     const urls = prepareUrls(
                         protocol,
-                        DEFAULT_OPTIONS.host,
-                        DEFAULT_OPTIONS.port
+                        DEFAULT_OPTIONS.HOST,
+                        DEFAULT_OPTIONS.PORT
                     );
                     const devSocket = {
                         warnings: warnings =>
@@ -111,14 +114,14 @@ module.exports = (api, projectOptions) => {
 
                     // Launch WebpackDevServer.
                     devServer.listen(
-                        DEFAULT_OPTIONS.port,
-                        DEFAULT_OPTIONS.host,
+                        DEFAULT_OPTIONS.PORT,
+                        DEFAULT_OPTIONS.HOST,
                         err => {
                             if (err) {
                                 return console.log(err);
                             }
                             if (isInteractive) {
-                                clearConsole();
+                                // clearConsole();
                             }
 
                             // We used to support resolving modules according to `NODE_PATH`.

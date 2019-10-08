@@ -1,11 +1,11 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const readPkg = require('read-pkg');
 const merge = require('webpack-merge');
-const Config = require('webpack-chain');
+const WebpackChain = require('webpack-chain');
 const { warn, error, isPlugin } = require('@yuandana/react-cli-shared-utils');
 const PluginAPI = require('./plugin-api');
-const { builtInPlugins, idToPlugin } = require('./build-in-plugins');
+const { builtinPlugins, idToPlugin } = require('./buildin-plugins');
 
 function cloneRuleNames(to, from) {
     if (!to || !from) {
@@ -60,9 +60,13 @@ class Service {
         }
         this.initialized = true;
         // apply plugins.
+
         this.plugins.forEach(({ id, apply }) => {
-            console.log('TCL: init -> this.plugins', this.plugins);
-            apply(new PluginAPI(id, this), this.projectOptions);
+            // 文件存在但返回错误时
+            // apply 可能不是 function
+            // 执行将报错影响其他函数执行
+            typeof apply === 'function' &&
+                apply(new PluginAPI(id, this), this.projectOptions);
         });
     }
 
@@ -85,6 +89,8 @@ class Service {
                     id in this.pkg.optionalDependencies
                 ) {
                     let apply = () => {};
+                    // 文件存在，但是文件返回的不是 function 时候
+                    // require(id) = {}
                     try {
                         apply = require(id);
                     } catch (e) {
@@ -95,11 +101,11 @@ class Service {
                     return idToPlugin(id);
                 }
             });
-        return builtInPlugins.concat(projectPlugins);
+        return builtinPlugins.concat(projectPlugins);
     }
 
     resolveChainableWebpackConfig() {
-        const chainableConfig = new Config();
+        const chainableConfig = new WebpackChain();
         // apply chains
         this.webpackChainFns.forEach(fn => fn(chainableConfig));
         return chainableConfig;

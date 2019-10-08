@@ -6,12 +6,13 @@ const idToPlugin = id => ({
         id.indexOf('./') === 0 ? id : paths.appNodeModules + '/' + id
     }`)
 });
-const builtInPluginList = [
-    './base-webpack-config',
-    './css',
-    './start',
-    './build'
+const builtinPlugins = [
+    './config/base',
+    './config/style',
+    './config/file',
+    './command/start',
+    './command/build'
 ];
 
-exports.builtInPlugins = builtInPluginList.map(idToPlugin);
+exports.builtinPlugins = builtinPlugins.map(idToPlugin);
 exports.idToPlugin = idToPlugin;

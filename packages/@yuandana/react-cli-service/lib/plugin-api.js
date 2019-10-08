@@ -1,11 +1,17 @@
 const path = require('path');
 const hash = require('hash-sum');
-const { matchesPluginId } = require('@yuandana/react-cli-shared-utils');
+// const { matchesPluginId } = require('@yuandana/react-cli-shared-utils');
 
+/**
+ * PluginAPI 类
+ *
+ * 在项目初始化时，暴露给插件的 api
+ * 插件在执行时拿到的是独立 PluginAPI 实例
+ */
 class PluginAPI {
     /**
-     * @param {string} id - Id of the plugin.
-     * @param {Service} service - A vue-cli-service instance.
+     * @param {string} id - 插件的 Id，react-plugin-[id]
+     * @param {Service} service - react-cli-service 实例.
      */
     constructor(id, service) {
         this.id = id;
@@ -13,17 +19,17 @@ class PluginAPI {
     }
 
     /**
-     * Current working directory.
+     * 当前的工作目录.
      */
     getCwd() {
         return this.service.context;
     }
 
     /**
-     * Resolve path for a project.
+     * 通过相对于项目根目录的相对路径获取到绝对路径
      *
-     * @param {string} _path - Relative path from project root
-     * @return {string} The resolved absolute path.
+     * @param  {string} _path - 相对于项目根目录的相对路径
+     * @return {string} 获取到的绝对路径.
      */
     resolve(_path) {
         return path.resolve(this.service.context, _path);
@@ -31,31 +37,36 @@ class PluginAPI {
 
     /**
      * Check if the project has a given plugin.
+     * 检查 package.json 中是否已存在插件
+     * 检查 this.service.plugins 是否已经注册过插件
      *
-     * @param {string} id - Plugin id, can omit the (@react/|react-|@scope/react)-cli-plugin- prefix
+     * @param  {string} id -
+     *      Plugin id, can omit the (@yuandana\/react/|react-|@scope/react)-cli-plugin- prefix
+     *      插件id, 忽略 (@yuandana\/react/|react-|@scope/react)-cli-plugin- 前缀的部分
      * @return {boolean}
      */
-    hasPlugin(id) {
-        if (id === 'router') id = 'react-router';
-        if (['react-router', 'reactx'].includes(id)) {
-            const pkg = this.service.pkg;
-            return (
-                (pkg.dependencies && pkg.dependencies[id]) ||
-                (pkg.devDependencies && pkg.devDependencies[id])
-            );
-        }
-        return this.service.plugins.some(p => matchesPluginId(id, p.id));
-    }
+    // hasPlugin(id) {
+    //     if (id === 'router') id = 'react-router';
+    //     if (['react-router', 'reactx'].includes(id)) {
+    //         const pkg = this.service.pkg;
+    //         return (
+    //             (pkg.dependencies && pkg.dependencies[id]) ||
+    //             (pkg.devDependencies && pkg.devDependencies[id])
+    //         );
+    //     }
+    //     return this.service.plugins.some(p => matchesPluginId(id, p.id));
+    // }
 
     /**
-     * Register a command that will become available as `vue-cli-service [name]`.
+     * Register a command that will become available as `react-cli-service [name]`.
+     * 注册一个命令 可通过 `react-cli-service [命令]` 来执行
      *
      * @param {string} name
      * @param {object} [opts]
      *   {
-     *     description: string,
-     *     usage: string,
-     *     options: { [string]: string }
+     *      description: string,
+     *      usage: string,
+     *      options: { [string]: string }
      *   }
      * @param {function} fn
      *   (args: { [string]: string }, rawArgs: string[]) => ?Promise
@@ -73,7 +84,10 @@ class PluginAPI {
      * the function is lazy and won't be called until `resolveWebpackConfig` is
      * called
      *
+     * 注册一个方法将收到 chainableWebpackConfig 对象
+     *
      * @param {function} fn
+     *  (args: { [Object]: chainableWebpackConfig } )
      */
     chainWebpack(fn) {
         this.service.webpackChainFns.push(fn);

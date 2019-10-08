@@ -54,16 +54,30 @@ exports.defaultPreset = {
     }
 };
 
-exports.resolvePreset = async cliOptions => {
+exports.resolvePreset = async (projectName, cliOptions) => {
     let preset;
     // 如果命令行参数重指定了 preset
     // react create hello-word --preset [some-preset]
     if (cliOptions.preset) {
         preset = resolveLocalOrRemotePreset(cliOptions.preset);
+        // react create hello-word --default
     } else if (cliOptions.default) {
         preset = exports.defaultPreset;
+        // 给出提示 prompt 根据用户选择结果返回 preset
     } else {
         preset = await promptAndResolvePreset();
     }
+
+    // inject core service: @yuandana/react-cli-service
+    // 注入核心的 service 包
+    preset.plugins['@yuandana/react-cli-service'] = Object.assign(
+        {
+            projectName: this.name
+        },
+        preset,
+        {
+            bare: cliOptions.bare
+        }
+    );
     return preset;
 };

@@ -1,5 +1,4 @@
 const paths = require('../../paths');
-// const publicPath = isEnvProduction ? paths.servedPath : isEnvDevelopment && '/';
 const publicPath = '/';
 const useTypeScript = false;
 const imageInlineSizeLimit = parseInt(
@@ -9,8 +8,10 @@ const imageInlineSizeLimit = parseInt(
 module.exports = api => {
     api.chainWebpack(webpackChainConfig => {
         // mode === 'production'
-        // mode === 'developer'
+        // mode === 'development'
         // mode === 'test'
+
+        webpackChainConfig.mode('development');
 
         // webpackConfig.entry
         webpackChainConfig
@@ -51,11 +52,19 @@ module.exports = api => {
         //         name: 'static/media/[name].[hash:8].[ext]'
         //     })
         //     .end();
-
         webpackChainConfig.merge({
             module: {
                 strictExportPresence: true
             }
         });
+
+        webpackChainConfig
+            .plugin('html-webpack-plugin')
+            .use(require.resolve('html-webpack-plugin'), [
+                {
+                    inject: true,
+                    template: paths.appHtml
+                }
+            ]);
     });
 };

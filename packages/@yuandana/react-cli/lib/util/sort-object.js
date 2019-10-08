@@ -1,3 +1,6 @@
+/**
+ * 根据传入的 序列 keyOrder 对 obj 进行排序
+ */
 module.exports = function sortObject(obj, keyOrder, dontSortByUnicode) {
     if (!obj) return;
     const res = {};

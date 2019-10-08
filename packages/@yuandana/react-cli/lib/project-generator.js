@@ -1,3 +1,4 @@
+const ejs = require('ejs');
 const chalk = require('chalk');
 const semver = require('semver');
 const fs = require('fs-extra');
@@ -9,15 +10,16 @@ const {
     stopSpinner,
     hasYarn,
     loadModule,
-    exit
+    info
 } = require('@yuandana/react-cli-shared-utils');
 const normalizeFilePaths = require('./util/normalize-file-paths');
 const writeFileTree = require('./util/write-file-tree');
 const sortObject = require('./util/sort-object');
 const { resolvePreset } = require('./preset');
-const PluginGeneratorAPI = require('./plugin-generator-api');
+const ProjectGeneratorAPI = require('./project-generator-api');
 const { loadLocalConfig } = require('./local-config');
 const { installDeps } = require('./util/install-deps');
+const CLIVersion = require(`../package.json`).version;
 
 /**
  * 确保在文件的最后一行空行
@@ -38,44 +40,39 @@ class ProjectGenerator {
      * @param {String} context 项目目录路径
      */
     constructor(name, context) {
+        // 项目名称
         this.name = name;
+        // 执行命令的上下文地址
         this.context = context;
+        // 虚拟文件树
         this.files = {};
-        // plugin 会通过 PluginGeneratorApi 类操作 this.pkg
+        // package 的配置对象
         this.pkg = {};
+        // 通过 ProjectGeneratorApi 注入进来的文件生成器
+        this.fileMiddlewares = [];
     }
 
     async create(cliOptions = {}, preset = null) {
-        const localVersion = require(`../package.json`).version;
-        const consoleTitle = `React cli ${localVersion}`;
-        // 获取用户根据介绍的选项配置
         await clearConsole();
-        log(`${chalk.blue(consoleTitle)}`);
+        info(`React cli ${CLIVersion}`);
 
-        // 根据介绍信息选项获取用户配置对象
+        // 第一步
+        // 根据 cliOptions 的参数获取 preset
         if (!preset) {
-            preset = await resolvePreset(cliOptions);
+            preset = await resolvePreset(this.name, cliOptions);
         }
-
-        // 开始创建项目
+        console.info(`-------------------(1)`);
+        // 第二步
+        // 根据 preset 组织 package.json
+        // 写入文件夹
         await clearConsole();
-
+        info(`React cli ${CLIVersion}`);
         // 根据用户选项结果组织 pkg 对象
         this.pkg = await this.resolvePkg(this.name, preset);
-
-        //根据 pkg 对象 及 preset 组织文件对象
-        const files = this.resolveFiles(this.pkg, preset);
-
         logWithSpinner(
             `✨`,
             `Creating project in ${chalk.yellow(this.context)}.`
         );
-
-        const packageManager =
-            cliOptions.packageManager ||
-            loadLocalConfig().packageManager ||
-            (hasYarn() ? 'yarn' : 'npm');
-
         try {
             // 创建文件夹（同步）
             fs.mkdirsSync(this.context);
@@ -87,28 +84,50 @@ class ProjectGenerator {
             stopSpinner();
             log(error);
         }
-
-        // install
         stopSpinner();
-        log(`Installing CLI plugins. This might take a while...`);
-        log();
-        await installDeps(this.context, packageManager, cliOptions.registry);
+        console.info(`-------------------(2)`);
 
-        // 调用 plugins 里的 generator 逻辑生成配置文件
-        log();
-        log(`Invoking generators...`);
+        // 第三步
+        // 在创建的文件夹中执行 npm install || yarn 来安装所有依赖
+        const packageManager =
+            cliOptions.packageManager ||
+            loadLocalConfig().packageManager ||
+            (hasYarn() ? 'yarn' : 'npm');
+        info(`Installing CLI plugins. This might take a while...`);
+        await installDeps(this.context, packageManager, cliOptions.registry);
+        console.info(`-------------------(3)`);
+
+        // 第四步
+        // 获取所有安装的 plugins
+        // 并执行其内的 generator 来初始化项目
+        logWithSpinner(`✨`, `Invoking generators...`);
         const plugins = await this.resolvePlugins(preset.plugins);
-        // apply generators from plugins
+        // 执行所有 plugin 中的 generator
+        // 通过 generator 收取所有 fileMiddleware 到 this.fileMiddlewares
+        // 并通过 resolveFiles 执行
         plugins.forEach(({ id, apply, options }) => {
-            const api = new PluginGeneratorAPI(id, this, options);
+            const api = new ProjectGeneratorAPI(id, this, options);
             apply(api, options);
         });
+        // 并通过 resolveFiles 执行 this.fileMiddlewares
+        // 并将文件注入到虚拟文件树 this.files 上
+        await this.resolveFiles(preset);
+        stopSpinner();
+        console.info(`-------------------(4)`);
+
+        // 第五步
+        // 如果创建时 用户选择了 preset.userConfigFiles
+        logWithSpinner(`✨`, `Extract config to files`);
         if (preset.useConfigFiles) {
             this.extractConfigFiles();
         }
-        await writeFileTree(this.context, {
-            ['package.json']: JSON.stringify(this.pkg, null, 2) + '\n'
-        });
+        stopSpinner();
+        console.info(`-------------------(5)`);
+
+        // 最后
+        // 生成所有文件
+        // 结束
+        await writeFileTree(this.context, this.files);
         process.exit(1);
     }
 
@@ -117,9 +136,8 @@ class ProjectGenerator {
     }
 
     getVersions() {
-        const localVersion = require(`../package.json`).version;
         const {
-            latestVersion = localVersion,
+            latestVersion = CLIVersion,
             lastChecked = 0
         } = loadLocalConfig();
         const daysPassed = (Date.now() - lastChecked) / (60 * 60 * 1000 * 24);
@@ -133,13 +151,25 @@ class ProjectGenerator {
         }
 
         return {
-            current: localVersion,
+            current: CLIVersion,
             latest: latestVersion
         };
     }
 
+    /**
+     * 读取对应id下的 generator 内容
+     * 组装所有plugins对象
+     * 如有 prompts 配置 则有options对象
+     * {
+     *  id, apply, options
+     * }
+     * @param {d} plugins
+     */
     async resolvePlugins(plugins = []) {
-        const resultPlugins = [];
+        // ensure cli-service is invoked first
+        // 确保 react-cli-service 被排在第一位， react-cli-service/generator 第一执行
+        plugins = sortObject(plugins, ['@yuandana/react-cli-service'], true);
+        const result = [];
         for (const id of Object.keys(plugins)) {
             const apply =
                 loadModule(`${id}/generator`, this.context) || (() => {});
@@ -156,14 +186,17 @@ class ProjectGenerator {
                     options = await inquirer.prompt(prompts);
                 }
             }
-            resultPlugins.push({ id, apply, options });
+            result.push({ id, apply, options });
         }
-        return resultPlugins;
+        return result;
     }
 
-    resolveFiles(pkg, preset = {}) {
-        const files = {};
-        files['package.json'] = JSON.stringify(pkg, null, 2) + '\n';
+    async resolveFiles(preset = {}) {
+        const files = this.files;
+        for (const middleware of this.fileMiddlewares) {
+            await middleware(files, ejs.render);
+        }
+        // files['package.json'] = JSON.stringify(this.pkg, null, 2) + '\n';
 
         // normalize file paths on windows
         // all paths are converted to use / instead of \
@@ -178,13 +211,8 @@ class ProjectGenerator {
             private: true,
             description: '',
             author: '',
-            devDependencies: {
-                '@yuandana/react-cli-service': 'latest'
-            },
-            dependencies: {
-                react: 'latest',
-                'react-dom': 'latest'
-            }
+            devDependencies: {},
+            dependencies: {}
         };
 
         const { latest } = await this.getVersions();

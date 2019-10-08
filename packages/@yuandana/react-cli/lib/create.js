@@ -15,14 +15,14 @@ const ProjectGenerator = require('./project-generator');
  * @param {String} projectName
  * @param {Object} options
  */
-async function create(projectName, options) {
-    const cwd = options.cwd || process.cwd();
+async function create(projectName, cliOptions) {
+    const cwd = cliOptions.cwd || process.cwd();
     const inCurrent = projectName === '.';
     const name = inCurrent ? path.relative('../', cwd) : projectName;
     const targetDir = path.resolve(cwd, projectName || '.');
 
     if (fs.existsSync(targetDir)) {
-        if (options.force) {
+        if (cliOptions.force) {
             await fs.remove(targetDir);
         } else {
             await clearConsole();
@@ -63,7 +63,7 @@ async function create(projectName, options) {
     }
 
     const projectGenerator = new ProjectGenerator(name, targetDir);
-    projectGenerator.create(options);
+    projectGenerator.create(cliOptions);
 }
 
 module.exports = (...args) => {
