@@ -42,6 +42,7 @@ function shouldSetBrowsers(isInteractive) {
 }
 
 function checkBrowsers(dir, isInteractive, retry = true) {
+    return Promise.resolve();
     const current = browserslist.findConfig(dir);
     if (current != null) {
         return Promise.resolve(current);

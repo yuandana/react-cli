@@ -54,7 +54,7 @@ class ProjectGenerator {
 
     async create(cliOptions = {}, preset = null) {
         await clearConsole();
-        info(`React cli ${CLIVersion}`);
+        info(`@yuandana/react-cli v${CLIVersion}`);
 
         // 第一步
         // 根据 cliOptions 的参数获取 preset
@@ -65,7 +65,7 @@ class ProjectGenerator {
         // 根据 preset 组织 package.json
         // 写入文件夹
         await clearConsole();
-        info(`React cli ${CLIVersion}`);
+        info(`@yuandana/react-cli v${CLIVersion}`);
         // 根据用户选项结果组织 pkg 对象
         this.pkg = await this.resolvePkg(this.name, preset);
         logWithSpinner(
