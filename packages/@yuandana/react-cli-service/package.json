@@ -32,6 +32,8 @@
         "is-root": "^2.1.0",
         "postcss-flexbugs-fixes": "^4.1.0",
         "postcss-loader": "^3.0.0",
+        "react": "^16.10.2",
+        "react-dom": "^16.10.2",
         "read-pkg": "^5.2.0",
         "shell-quote": "^1.7.2",
         "style-loader": "^1.0.0",
