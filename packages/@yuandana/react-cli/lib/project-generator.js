@@ -206,8 +206,12 @@ class ProjectGenerator {
             private: true,
             description: '',
             author: '',
+            scripts: {},
             devDependencies: {},
-            dependencies: {}
+            dependencies: {
+                react: '^16.10.2',
+                'react-dom': '^16.10.2'
+            }
         };
 
         const { latest } = await this.getVersions();
