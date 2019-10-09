@@ -27,6 +27,7 @@
         "escape-string-regexp": "^2.0.0",
         "file-loader": "^4.2.0",
         "fork-ts-checker-webpack-plugin": "^1.5.0",
+        "fs-extra": "^8.1.0",
         "hash-sum": "^2.0.0",
         "html-webpack-plugin": "^3.2.0",
         "is-root": "^2.1.0",
