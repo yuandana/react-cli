@@ -191,7 +191,7 @@ class ProjectGenerator {
         for (const middleware of this.fileMiddlewares) {
             await middleware(files, ejs.render);
         }
-        // files['package.json'] = JSON.stringify(this.pkg, null, 2) + '\n';
+        files['package.json'] = JSON.stringify(this.pkg, null, 2) + '\n';
 
         // normalize file paths on windows
         // all paths are converted to use / instead of \
