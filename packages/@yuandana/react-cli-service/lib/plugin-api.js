@@ -36,28 +36,6 @@ class PluginAPI {
     }
 
     /**
-     * Check if the project has a given plugin.
-     * 检查 package.json 中是否已存在插件
-     * 检查 this.service.plugins 是否已经注册过插件
-     *
-     * @param  {string} id -
-     *      Plugin id, can omit the (@yuandana\/react/|react-|@scope/react)-cli-plugin- prefix
-     *      插件id, 忽略 (@yuandana\/react/|react-|@scope/react)-cli-plugin- 前缀的部分
-     * @return {boolean}
-     */
-    // hasPlugin(id) {
-    //     if (id === 'router') id = 'react-router';
-    //     if (['react-router', 'reactx'].includes(id)) {
-    //         const pkg = this.service.pkg;
-    //         return (
-    //             (pkg.dependencies && pkg.dependencies[id]) ||
-    //             (pkg.devDependencies && pkg.devDependencies[id])
-    //         );
-    //     }
-    //     return this.service.plugins.some(p => matchesPluginId(id, p.id));
-    // }
-
-    /**
      * Register a command that will become available as `react-cli-service [name]`.
      * 注册一个命令 可通过 `react-cli-service [命令]` 来执行
      *
@@ -84,10 +62,7 @@ class PluginAPI {
      * the function is lazy and won't be called until `resolveWebpackConfig` is
      * called
      *
-     * 注册一个方法将收到 chainableWebpackConfig 对象
-     *
      * @param {function} fn
-     *  (args: { [Object]: chainableWebpackConfig } )
      */
     chainWebpack(fn) {
         this.service.webpackChainFns.push(fn);
@@ -104,7 +79,7 @@ class PluginAPI {
      * @param {object | function} fn
      */
     configureWebpack(fn) {
-        this.service.webpackRawConfigFns.push(fn);
+        this.service.webpackConfigFns.push(fn);
     }
 
     /**
@@ -121,10 +96,10 @@ class PluginAPI {
      * Resolve the final raw webpack config, that will be passed to webpack.
      *
      * @param {ChainableWebpackConfig} [chainableConfig]
-     * @return {object} Raw webpack config.
+     * @return {object} raw webpack config.
      */
     resolveWebpackConfig(chainableConfig) {
-        return this.service.resolveWebpackConfig(chainableConfig);
+        return this.service.resolveWebpackConfig();
     }
 
     /**

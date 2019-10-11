@@ -34,13 +34,14 @@ class Prompt {
         });
         const finalFeaturePrompts = {
             name: 'features',
-            when: this.isManualMode,
+            // when: this.isManualMode,
             type: 'checkbox',
             message: 'Check the features needed for your project:',
             choices: this.featurePrompts,
             pageSize: 10
         };
-        return [...this.presetPrompts, finalFeaturePrompts];
+        // return [...this.presetPrompts, finalFeaturePrompts];
+        return [finalFeaturePrompts];
     }
 
     async resolvePresetByPrompts() {

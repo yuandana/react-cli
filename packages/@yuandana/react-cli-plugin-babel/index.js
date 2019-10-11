@@ -1,4 +1,17 @@
 module.exports = (api, options) => {
+    // api.extendWebpack(() => {
+    //     return {
+    //         module: {
+    //             oneOf: [
+    //                 {
+    //                     test: /\.(js|mjs|jsx|ts|tsx)$/,
+    //                     loader: require.resolve('babel-loader')
+    //                 }
+    //             ]
+    //         }
+    //     };
+    // });
+
     api.chainWebpack(webpackConfig => {
         console.log(require.resolve('babel-loader'));
         webpackConfig.module
@@ -33,6 +46,5 @@ module.exports = (api, options) => {
         //     // See #6846 for context on why cacheCompression is disabled
         //     cacheCompression: false
         //     // compact: false
-        // });
     });
 };

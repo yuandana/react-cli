@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const readPkg = require('read-pkg');
 const merge = require('webpack-merge');
-const WebpackChain = require('webpack-chain');
+const WebpackChainConfig = require('webpack-chain');
 const { warn, error, isPlugin } = require('@yuandana/react-cli-shared-utils');
 const PluginAPI = require('./plugin-api');
 const { builtinPlugins, idToPlugin } = require('./buildin-plugins');
@@ -23,8 +23,8 @@ function cloneRuleNames(to, from) {
 
 class Service {
     constructor(context) {
+        this.webpackConfigFns = [];
         this.webpackChainFns = [];
-        this.webpackRawConfigFns = [];
         this.devServerConfigFns = [];
 
         this.commands = {};
@@ -89,8 +89,6 @@ class Service {
                     id in this.pkg.optionalDependencies
                 ) {
                     let apply = () => {};
-                    // 文件存在，但是文件返回的不是 function 时候
-                    // require(id) = {}
                     try {
                         apply = require(id);
                     } catch (e) {
@@ -105,7 +103,7 @@ class Service {
     }
 
     resolveChainableWebpackConfig() {
-        const chainableConfig = new WebpackChain();
+        const chainableConfig = new WebpackChainConfig();
         // apply chains
         this.webpackChainFns.forEach(fn => fn(chainableConfig));
         return chainableConfig;
@@ -123,7 +121,7 @@ class Service {
         let config = chainableConfig.toConfig();
         const original = config;
         // apply raw config fns
-        this.webpackRawConfigFns.forEach(fn => {
+        this.webpackConfigFns.forEach(fn => {
             if (typeof fn === 'function') {
                 // function with optional return value
                 const res = fn(config);

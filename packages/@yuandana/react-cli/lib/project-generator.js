@@ -53,14 +53,14 @@ class ProjectGenerator {
     }
 
     async create(cliOptions = {}, preset = null) {
-        await clearConsole();
-        info(`@yuandana/react-cli v${CLIVersion}`);
-
         // 第一步
         // 根据 cliOptions 的参数获取 preset
+        await clearConsole();
+        info(`@yuandana/react-cli v${CLIVersion}`);
         if (!preset) {
             preset = await resolvePreset(this.name, cliOptions);
         }
+
         // 第二步
         // 根据 preset 组织 package.json
         // 写入文件夹
@@ -68,10 +68,11 @@ class ProjectGenerator {
         info(`@yuandana/react-cli v${CLIVersion}`);
         // 根据用户选项结果组织 pkg 对象
         this.pkg = await this.resolvePkg(this.name, preset);
-        logWithSpinner(
-            `✨`,
-            `Creating project in ${chalk.yellow(this.context)}.`
+        log();
+        log(
+            `Creating a new React app project in ${chalk.green(this.context)}.`
         );
+        log();
         try {
             // 创建文件夹（同步）
             fs.mkdirsSync(this.context);
@@ -91,13 +92,14 @@ class ProjectGenerator {
             cliOptions.packageManager ||
             loadLocalConfig().packageManager ||
             (hasYarn() ? 'yarn' : 'npm');
-        info(`Installing CLI plugins. This might take a while...`);
+        info(`Installing packages. This might take a couple of minutes.`);
+        log();
         await installDeps(this.context, packageManager, cliOptions.registry);
 
         // 第四步
         // 获取所有安装的 plugins
         // 并执行其内的 generator 来初始化项目
-        logWithSpinner(`✨`, `Invoking generators...`);
+        log(`✨  Invoking generators...`);
         const plugins = await this.resolvePlugins(preset.plugins);
         // 执行所有 plugin 中的 generator
         // 通过 generator 收取所有 fileMiddleware 到 this.fileMiddlewares
@@ -109,25 +111,55 @@ class ProjectGenerator {
         // 并通过 resolveFiles 执行 this.fileMiddlewares
         // 并将文件注入到虚拟文件树 this.files 上
         await this.resolveFiles(preset);
-        stopSpinner();
 
         // 第五步
         // 如果创建时 用户选择了 preset.userConfigFiles
-        logWithSpinner(`✨`, `Extract config to files`);
         if (preset.useConfigFiles) {
+            log(`✨ Extract config to files`);
             this.extractConfigFiles();
         }
-        stopSpinner();
 
         // 最后
         // 生成所有文件
         // 结束
         await writeFileTree(this.context, this.files);
+        this.logSuccessInfo();
         process.exit(1);
     }
 
     extractConfigFiles() {
         // todo something to this.files
+    }
+
+    logSuccessInfo() {
+        log();
+        log(
+            `${chalk.green('success')} Created ${this.name} at ${this.context}`
+        );
+        log(`Inside that directory, you can run several commands:`);
+        log();
+
+        log(`   ${chalk.cyan('yarn start')}`);
+        log(`       Starts the development server.`);
+        log();
+
+        log(`   ${chalk.cyan('yarn build')}`);
+        log(`       Bundles the app into static files for production.`);
+        log();
+
+        // log(`   ${chalk.cyan('yarn test')}`);
+        // log(`       Starts the test runner.`);
+        // log();
+
+        // log(`   ${chalk.cyan('yarn eject')}`);
+        // log(`       xxxxx.`);
+        // log();
+
+        log(`We suggest that you begin by typing:`);
+        log();
+        log(`   ${chalk.cyan('cd')} ${this.name}`);
+        log(`   ${chalk.cyan('yarn start')}`);
+        log();
     }
 
     getVersions() {

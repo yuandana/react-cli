@@ -41,8 +41,9 @@ module.exports = (api, projectOptions) => {
                 '--public': `specify the public network URL for the HMR client`
             }
         },
-        async args => {
+        async (args, rawArgv) => {
             info('Starting development server...');
+            process.env.REACT_CLI_MODE = args.mode || 'development';
 
             checkBrowsers(paths.appPath)
                 .then(() => {
@@ -55,7 +56,7 @@ module.exports = (api, projectOptions) => {
                 })
                 .then(() => {
                     const config = api.resolveWebpackConfig();
-                    // console.dir(config, { depth: null });
+                    console.dir(config, { depth: null });
 
                     const protocol =
                         process.env.HTTPS === 'true' ? 'https' : 'http';

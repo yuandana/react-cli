@@ -1,6 +1,6 @@
 module.exports = cli => {
     cli.injectFeature({
-        name: 'bable',
+        name: 'Babel',
         value: 'babel',
         description:
             'Transpile modern JavaScript to older versions (for compatibility)',
