@@ -9,6 +9,7 @@ const idToPlugin = id => ({
 const builtinPlugins = [
     './config/base',
     './config/style',
+    './config/image',
     './config/file',
     './command/start',
     './command/build'

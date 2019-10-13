@@ -1,33 +1,189 @@
-module.exports = api => {
-    api.chainWebpack(webpackChainConfig => {
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const postcssNormalize = require('postcss-normalize');
+const getCSSModuleLocalIdent = require('../../react-dev-utils/get-css-module-local-ident');
+const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
+const shouldUseRelativeAssetPaths = process.env.REACT_CLI_PUBLICPATH === './';
+
+const resolveStyleLoader = (
+    webpackChainConfig,
+    ruleName,
+    cssOptions = {},
+    preProcessor,
+    mode = process.env.REACT_CLI_MODE
+) => {
+    const isEnvProduction = mode === 'production';
+
+    if (isEnvProduction) {
         webpackChainConfig.module
-            .rule('style')
-            .test(/\.css$/)
-            .exclude.add(/\.module\.css$/)
-            .end()
+            .rule(ruleName)
+            .use('mini-css-extract-loader')
+            .loader(MiniCssExtractPlugin.loader);
+    } else {
+        webpackChainConfig.module
+            .rule(ruleName)
             .use('style-loader')
             .loader(require.resolve('style-loader'))
-            .end()
-            .use('css-loader')
-            .loader(require.resolve('css-loader'))
-            .end()
-            .use('postcss-loader')
-            .loader(require.resolve('postcss-loader'))
-            .options({
-                ident: 'postcss',
-                plugins: () => [
-                    require('postcss-flexbugs-fixes'),
-                    require('autoprefixer')({
-                        browsers: [
-                            '>1%',
-                            'last 4 versions',
-                            'Firefox ESR',
-                            'not ie < 9' // React doesn't support IE8 anyway
-                        ],
+            .options(
+                shouldUseRelativeAssetPaths ? { publicPath: '../../' } : {}
+            );
+    }
+    webpackChainConfig.module
+        .rule(ruleName)
+        .use('css-loader')
+        .loader(require.resolve('css-loader'))
+        .options(cssOptions);
+
+    webpackChainConfig.module
+        .rule(ruleName)
+        .use('postcss-loader')
+        .loader(require.resolve('postcss-loader'))
+        .options({
+            // Necessary for external CSS imports to work
+            // https://github.com/facebook/create-react-app/issues/2677
+            ident: 'postcss',
+            plugins: () => [
+                require('postcss-flexbugs-fixes'),
+                require('postcss-preset-env')({
+                    autoprefixer: {
                         flexbox: 'no-2009'
-                    })
-                ]
-            })
+                    },
+                    stage: 3
+                }),
+                // Adds PostCSS Normalize as the reset css with default options,
+                // so that it honors browserslist config in package.json
+                // which in turn let's users customize the target behavior as per their needs.
+                postcssNormalize()
+            ],
+            sourceMap: isEnvProduction && shouldUseSourceMap
+        });
+
+    if (preProcessor) {
+        webpackChainConfig.module
+            .rule(ruleName)
+            .use('resolve-url-loader')
+            .loader(require.resolve('resolve-url-loader'))
+            .options({
+                sourceMap: isEnvProduction && shouldUseSourceMap
+            });
+        webpackChainConfig.module
+            .rule(ruleName)
+            .use(preProcessor)
+            .loader(require.resolve(preProcessor))
+            .options({
+                sourceMap: true
+            });
+    }
+};
+
+module.exports = api => {
+    api.chainWebpack(webpackChainConfig => {
+        const cssRegex = /\.css$/;
+        const cssModuleRegex = /\.module\.css$/;
+        const sassRegex = /\.(scss|sass)$/;
+        const sassModuleRegex = /\.module\.(scss|sass)$/;
+        const lessRegex = /\.(less)/;
+        const lessModuleRegex = /\.module\.(less)$/;
+
+        const isEnvProduction = process.env.REACT_CLI_MODE === 'production';
+        /**
+         * css
+         */
+        webpackChainConfig.module
+            .rule('css')
+            .test(cssRegex)
+            .exclude.add(cssModuleRegex)
             .end();
+        resolveStyleLoader(webpackChainConfig, 'css', {
+            importLoaders: 1,
+            sourceMap: isEnvProduction && shouldUseSourceMap
+        });
+
+        /**
+         * css module
+         */
+        webpackChainConfig.module
+            .rule('css-module')
+            .test(cssModuleRegex)
+            .end();
+        resolveStyleLoader(webpackChainConfig, 'css-module', {
+            importLoaders: 1,
+            sourceMap: isEnvProduction && shouldUseSourceMap,
+            modules: true,
+            getLocalIdent: getCSSModuleLocalIdent
+        });
+
+        /**
+         * sass
+         */
+        webpackChainConfig.module
+            .rule('sass')
+            .test(sassRegex)
+            .exclude.add(sassModuleRegex)
+            .end();
+        resolveStyleLoader(
+            webpackChainConfig,
+            'sass',
+            {
+                importLoaders: 2,
+                sourceMap: isEnvProduction && shouldUseSourceMap
+            },
+            'sass-loader'
+        );
+
+        /**
+         * sass module
+         */
+        webpackChainConfig.module
+            .rule('sass-module')
+            .test(sassModuleRegex)
+            .end();
+        resolveStyleLoader(
+            webpackChainConfig,
+            'sass-module',
+            {
+                importLoaders: 2,
+                sourceMap: isEnvProduction && shouldUseSourceMap,
+                modules: true,
+                getLocalIdent: getCSSModuleLocalIdent
+            },
+            'sass-loader'
+        );
+
+        /**
+         * less
+         */
+        webpackChainConfig.module
+            .rule('less')
+            .test(lessRegex)
+            .exclude.add(lessModuleRegex)
+            .end();
+        resolveStyleLoader(
+            webpackChainConfig,
+            'less',
+            {
+                importLoaders: 2,
+                sourceMap: isEnvProduction && shouldUseSourceMap
+            },
+            'less-loader'
+        );
+
+        /**
+         * less module
+         */
+        webpackChainConfig.module
+            .rule('less-module')
+            .test(lessModuleRegex)
+            .end();
+        resolveStyleLoader(
+            webpackChainConfig,
+            'less-module',
+            {
+                importLoaders: 2,
+                sourceMap: isEnvProduction && shouldUseSourceMap,
+                modules: true,
+                getLocalIdent: getCSSModuleLocalIdent
+            },
+            'less-loader'
+        );
     });
 };

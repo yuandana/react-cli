@@ -474,21 +474,21 @@ module.exports = api => {
         //             }
         //         ]);
 
-        // webpackChainConfig.node
-        //     .set('module', 'empty')
-        //     .set('dgram', 'empty')
-        //     .set('dns', 'mock')
-        //     .set('fs', 'empty')
-        //     .set('http2', 'empty')
-        //     .set('net', 'empty')
-        //     .set('tls', 'empty')
-        //     .set('child_process', 'empty');
+        webpackChainConfig.node
+            .set('module', 'empty')
+            .set('dgram', 'empty')
+            .set('dns', 'mock')
+            .set('fs', 'empty')
+            .set('http2', 'empty')
+            .set('net', 'empty')
+            .set('tls', 'empty')
+            .set('child_process', 'empty');
 
-        // webpackChainConfig.merge({
-        //     module: {
-        //         strictExportPresence: true
-        //     },
-        //     performance: false
-        // });
+        webpackChainConfig.merge({
+            module: {
+                strictExportPresence: true
+            },
+            performance: false
+        });
     });
 };
