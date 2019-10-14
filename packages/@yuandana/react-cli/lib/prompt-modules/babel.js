@@ -16,8 +16,6 @@ module.exports = cli => {
         } else if (!answers.features.includes('babel')) {
             return;
         }
-        preset.plugins['@yuandana/react-cli-plugin-babel'] = {
-            version: '^1.0.0'
-        };
+        preset.plugins['@yuandana/react-cli-plugin-babel'] = {};
     });
 };
