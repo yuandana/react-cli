@@ -56,7 +56,7 @@ module.exports = (api, projectOptions) => {
                 })
                 .then(() => {
                     const config = api.resolveWebpackConfig();
-                    console.dir(config, { depth: null });
+                    // console.dir(config, { depth: null });
 
                     const protocol =
                         process.env.HTTPS === 'true' ? 'https' : 'http';
