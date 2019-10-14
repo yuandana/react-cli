@@ -1,6 +1,6 @@
 {
     "name": "@yuandana/react-cli-plugin-babel",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "babel plugin for react-cli",
     "main": "index.js",
     "repository": {
