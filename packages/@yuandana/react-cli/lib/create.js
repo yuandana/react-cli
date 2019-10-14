@@ -70,7 +70,7 @@ module.exports = (...args) => {
     return create(...args).catch(err => {
         stopSpinner(false); // do not persist
         error(err);
-        if (!process.env.VUE_CLI_TEST) {
+        if (!process.env.REACT_CLI_TEST) {
             process.exit(1);
         }
     });

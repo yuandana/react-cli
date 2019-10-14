@@ -1,13 +1,10 @@
 const ejs = require('ejs');
 const chalk = require('chalk');
 const semver = require('semver');
-const fs = require('fs-extra');
 const debug = require('debug');
 const {
     clearConsole,
-    logWithSpinner,
     log,
-    stopSpinner,
     hasYarn,
     loadModule,
     info
@@ -73,18 +70,12 @@ class ProjectGenerator {
             `Creating a new React app project in ${chalk.green(this.context)}.`
         );
         log();
-        try {
-            // 创建文件夹（同步）
-            fs.mkdirsSync(this.context);
-            // 生成 package.json 文件用于安装依赖 plugins
-            await writeFileTree(this.context, {
-                ['package.json']: JSON.stringify(this.pkg, null, 2) + '\n'
-            });
-        } catch (error) {
-            stopSpinner();
-            log(error);
-        }
-        stopSpinner();
+        // 创建文件夹（同步）
+        // fs.mkdirsSync(this.context);
+        // 生成 package.json 文件用于安装依赖 plugins
+        await writeFileTree(this.context, {
+            ['package.json']: JSON.stringify(this.pkg, null, 2) + '\n'
+        });
 
         // 第三步
         // 在创建的文件夹中执行 npm install || yarn 来安装所有依赖
@@ -92,10 +83,11 @@ class ProjectGenerator {
             cliOptions.packageManager ||
             loadLocalConfig().packageManager ||
             (hasYarn() ? 'yarn' : 'npm');
+
         info(`Installing packages. This might take a couple of minutes.`);
         log();
         await installDeps(this.context, packageManager, cliOptions.registry);
-
+        console.info('------');
         // 第四步
         // 获取所有安装的 plugins
         // 并执行其内的 generator 来初始化项目
