@@ -14,7 +14,7 @@ const createDevServerConfig = require('../webpack-dev-server.config');
 const fs = require('fs');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const clearConsole = require('../../react-dev-utils/clear-console');
+// const clearConsole = require('../../react-dev-utils/clear-console');
 const chalk = require('chalk');
 const DEFAULT_OPTIONS = {
     HOST: process.env.HOST || '0.0.0.0',
