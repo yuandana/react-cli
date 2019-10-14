@@ -87,7 +87,6 @@ class ProjectGenerator {
         info(`Installing packages. This might take a couple of minutes.`);
         log();
         await installDeps(this.context, packageManager, cliOptions.registry);
-        console.info('------');
         // 第四步
         // 获取所有安装的 plugins
         // 并执行其内的 generator 来初始化项目

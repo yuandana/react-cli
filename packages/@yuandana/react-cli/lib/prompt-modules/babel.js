@@ -17,7 +17,7 @@ module.exports = cli => {
             return;
         }
         preset.plugins['@yuandana/react-cli-plugin-babel'] = {
-            version: 'latest'
+            version: {}
         };
     });
 };
