@@ -11,7 +11,7 @@ const {
 } = require('../../react-dev-utils/webpack-dev-server-utils');
 const paths = require('../../paths');
 const createDevServerConfig = require('../webpack-dev-server.config');
-const fs = require('fs');
+const fs = require('fs-extra');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 // const clearConsole = require('../../react-dev-utils/clear-console');
