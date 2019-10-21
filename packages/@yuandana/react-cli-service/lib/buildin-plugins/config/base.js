@@ -94,12 +94,11 @@ module.exports = api => {
                     )
                 )
                 .end();
-        } else {
-            webpackChainConfig
-                .entry('app')
-                .add(paths.appIndexJs)
-                .end();
         }
+        webpackChainConfig
+            .entry('app')
+            .add(paths.appIndexJs)
+            .end();
 
         /**
          * webpackConfig.output
