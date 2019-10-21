@@ -6,7 +6,7 @@ const WebpackChainConfig = require('webpack-chain');
 const { warn, error, isPlugin } = require('@yuandana/react-cli-shared-utils');
 const PluginAPI = require('./plugin-api');
 const { builtinPlugins, idToPlugin } = require('./buildin-plugins');
-const defaultsDeep = require('lodash.defaultsdeep');
+const _ = require('lodash');
 
 function cloneRuleNames(to, from) {
     if (!to || !from) {
@@ -63,7 +63,7 @@ class Service {
         // apply plugins.
 
         const options = this.loadUserOptions();
-        this.projectOptions = defaultsDeep(userOptions);
+        this.projectOptions = _.defaultsDeep(userOptions);
 
         this.plugins.forEach(({ id, apply }) => {
             // 文件存在但返回错误时
