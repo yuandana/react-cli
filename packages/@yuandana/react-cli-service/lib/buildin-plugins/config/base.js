@@ -94,11 +94,12 @@ module.exports = api => {
                     )
                 )
                 .end();
+        } else {
+            webpackChainConfig
+                .entry('app')
+                .add(paths.appIndexJs)
+                .end();
         }
-        webpackChainConfig
-            .entry('app')
-            .add(paths.appIndexJs)
-            .end();
 
         /**
          * webpackConfig.output
@@ -246,26 +247,26 @@ module.exports = api => {
         //         webpackChainConfig.resolve.extensions.add(extension);
         //     });
 
-        // /**
-        //  * webpack.resolve.alias
-        //  */
-        // const aliasObject = {
-        //     // Support React Native Web
-        //     // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-        //     'react-native': 'react-native-web',
-        //     // Allows for better profiling with ReactDevTools
-        //     ...(isEnvProductionProfile && {
-        //         'react-dom$': 'react-dom/profiling',
-        //         'scheduler/tracing': 'scheduler/tracing-profiling'
-        //     }),
-        //     ...(modules.webpackAliases || {})
-        // };
-        // Object.keys(aliasObject).forEach(key => {
-        //     const value = aliasObject[key];
-        //     if (key && value) {
-        //         webpackChainConfig.resolve.alias.set(key, value);
-        //     }
-        // });
+        /**
+         * webpack.resolve.alias
+         */
+        const aliasObject = {
+            // Support React Native Web
+            // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
+            'react-native': 'react-native-web',
+            // Allows for better profiling with ReactDevTools
+            ...(isEnvProductionProfile && {
+                'react-dom$': 'react-dom/profiling',
+                'scheduler/tracing': 'scheduler/tracing-profiling'
+            }),
+            ...(modules.webpackAliases || {})
+        };
+        Object.keys(aliasObject).forEach(key => {
+            const value = aliasObject[key];
+            if (key && value) {
+                webpackChainConfig.resolve.alias.set(key, value);
+            }
+        });
 
         // /**
         //  * webpack.resolve.plugins

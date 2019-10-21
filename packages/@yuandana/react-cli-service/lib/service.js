@@ -37,7 +37,7 @@ class Service {
     }
 
     async run(name, args = {}, rawArgv = []) {
-        this.init();
+        await this.init();
 
         args._ = args._ || [];
         let command = this.commands[name];
@@ -63,7 +63,7 @@ class Service {
         // apply plugins.
 
         const options = this.loadUserOptions();
-        this.projectOptions = _.defaultsDeep(userOptions);
+        this.projectOptions = _.defaultsDeep(options);
 
         this.plugins.forEach(({ id, apply }) => {
             // 文件存在但返回错误时
@@ -78,7 +78,7 @@ class Service {
             this.webpackChainFns.push(this.projectOptions.chainWebpack);
         }
         if (this.projectOptions.configureWebpack) {
-            this.webpackRawConfigFns.push(this.projectOptions.configureWebpack);
+            this.webpackConfigFns.push(this.projectOptions.configureWebpack);
         }
     }
 
@@ -156,13 +156,13 @@ class Service {
         }
 
         // normalize some options
-        ensureSlash(resolved, 'publicPath');
+        // ensureSlash(resolved, 'publicPath');
         if (typeof resolved.publicPath === 'string') {
             resolved.publicPath = resolved.publicPath.replace(/^\.\//, '');
         }
         // for compatibility concern, in case some plugins still rely on `baseUrl` option
         resolved.baseUrl = resolved.publicPath;
-        removeSlash(resolved, 'outputDir');
+        // removeSlash(resolved, 'outputDir');
 
         // deprecation warning
         // TODO remove in final release
