@@ -37,6 +37,7 @@
         "less-loader": "^5.0.0",
         "lodash": "^4.17.15",
         "mini-css-extract-plugin": "^0.8.0",
+        "node-sass": "^4.13.0",
         "optimize-css-assets-webpack-plugin": "^5.0.3",
         "os": "^0.1.1",
         "pnp-webpack-plugin": "^1.5.0",

@@ -45,6 +45,8 @@ module.exports = (api, options = {
             }
         },
         async args => {
+            process.env.REACT_CLI_MODE = args.mode || 'production';
+
             for (const key in defaults) {
                 if (args[key] == null) {
                     args[key] = defaults[key];
@@ -113,14 +115,15 @@ async function build(args, api, options) {
     } = require('@yuandana/react-cli-shared-utils');
 
     log();
-    const mode = api.service.mode;
+    const mode = api.service.mode || process.env.REACT_CLI_MODE;
+
     if (args.target === 'app') {
         const bundleTag = args.modern
             ? args.modernBuild
                 ? `modern bundle `
                 : `legacy bundle `
             : ``;
-        logWithSpinner(`Building ${bundleTag}for ${mode}...`);
+        logWithSpinner(`Building ${bundleTag} for ${mode}...`);
     } else {
         const buildMode = buildModes[args.target];
         if (buildMode) {
@@ -140,6 +143,7 @@ async function build(args, api, options) {
 
     // resolve raw webpack config
     let webpackConfig = api.resolveWebpackConfig();
+    // console.dir(webpackConfig, {depth: null})
 
     // apply inline dest path after user configureWebpack hooks
     // so it takes higher priority
@@ -203,6 +207,10 @@ async function build(args, api, options) {
             }
 
             if (stats.hasErrors()) {
+                // console.log(stats.toString({
+                //     chunks: false,  // 使构建过程更静默无输出
+                //     colors: true    // 在控制台展示颜色
+                //   }));
                 return reject(`Build failed with errors.`);
             }
 

@@ -31,7 +31,7 @@ const WatchMissingNodeModulesPlugin = require('../../react-dev-utils/watch-missi
 const ForkTsCheckerWebpackPlugin = require('../../react-dev-utils/fork-ts-checker-webpack-plugin');
 const appPackageJson = require(paths.appPackageJson);
 
-module.exports = api => {
+module.exports = (api, options) => {
     api.chainWebpack(webpackChainConfig => {
         // mode === 'production'
         // mode === 'development'
@@ -105,7 +105,11 @@ module.exports = api => {
          */
         webpackChainConfig.output
             // The dist folder.
-            .path(isEnvProduction ? paths.appDist : undefined)
+            .path(
+                isEnvProduction
+                    ? api.resolve(options.outputDir) || paths.appDist
+                    : undefined
+            )
             // Add /* filename */ comments to generated require()s in the output.
             .pathinfo(isEnvDevelopment)
             // There will be one main bundle, and one file per asynchronous chunk.
