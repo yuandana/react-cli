@@ -144,7 +144,7 @@ async function build(args, api, options) {
 
     // resolve raw webpack config
     let webpackConfig = api.resolveWebpackConfig();
-    console.dir(webpackConfig, {depth: null})
+    // console.dir(webpackConfig, {depth: null})
 
     // apply inline dest path after user configureWebpack hooks
     // so it takes higher priority

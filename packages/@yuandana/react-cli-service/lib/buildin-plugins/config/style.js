@@ -4,14 +4,13 @@ const getCSSModuleLocalIdent = require('../../react-dev-utils/get-css-module-loc
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 const shouldUseRelativeAssetPaths = process.env.REACT_CLI_PUBLICPATH === './';
 
-const resolveStyleLoader = (
+const resolveStyleLoader = ({
     webpackChainConfig,
     ruleName,
     cssOptions = {},
-    preProcessor,
-    mode = process.env.REACT_CLI_MODE
-) => {
-    const isEnvProduction = mode === 'production';
+    preProcessor
+}) => {
+    const isEnvProduction = process.env.REACT_CLI_MODE === 'production';
 
     if (isEnvProduction) {
         webpackChainConfig.module
@@ -75,7 +74,7 @@ const resolveStyleLoader = (
     }
 };
 
-module.exports = api => {
+module.exports = (api, options) => {
     api.chainWebpack(webpackChainConfig => {
         const cssRegex = /\.css$/;
         const cssModuleRegex = /\.module\.css$/;
@@ -93,9 +92,13 @@ module.exports = api => {
             .test(cssRegex)
             .exclude.add(cssModuleRegex)
             .end();
-        resolveStyleLoader(webpackChainConfig, 'css', {
-            importLoaders: 1,
-            sourceMap: isEnvProduction && shouldUseSourceMap
+        resolveStyleLoader({
+            webpackChainConfig,
+            ruleName: 'css',
+            cssOptions: {
+                importLoaders: 1,
+                sourceMap: isEnvProduction && shouldUseSourceMap
+            }
         });
 
         /**
@@ -105,11 +108,15 @@ module.exports = api => {
             .rule('css-module')
             .test(cssModuleRegex)
             .end();
-        resolveStyleLoader(webpackChainConfig, 'css-module', {
-            importLoaders: 1,
-            sourceMap: isEnvProduction && shouldUseSourceMap,
-            modules: true,
-            getLocalIdent: getCSSModuleLocalIdent
+        resolveStyleLoader({
+            webpackChainConfig,
+            ruleName: 'css-module',
+            cssOptions: {
+                importLoaders: 1,
+                sourceMap: isEnvProduction && shouldUseSourceMap,
+                modules: true,
+                getLocalIdent: getCSSModuleLocalIdent
+            }
         });
 
         /**
@@ -120,15 +127,15 @@ module.exports = api => {
             .test(sassRegex)
             .exclude.add(sassModuleRegex)
             .end();
-        resolveStyleLoader(
+        resolveStyleLoader({
             webpackChainConfig,
-            'sass',
-            {
+            ruleName: 'sass',
+            cssOptions: {
                 importLoaders: 2,
                 sourceMap: isEnvProduction && shouldUseSourceMap
             },
-            'sass-loader'
-        );
+            preProcessor: 'sass-loader'
+        });
 
         /**
          * sass module
@@ -137,17 +144,17 @@ module.exports = api => {
             .rule('sass-module')
             .test(sassModuleRegex)
             .end();
-        resolveStyleLoader(
+        resolveStyleLoader({
             webpackChainConfig,
-            'sass-module',
-            {
+            ruleName: 'sass-module',
+            cssOptions: {
                 importLoaders: 2,
                 sourceMap: isEnvProduction && shouldUseSourceMap,
                 modules: true,
                 getLocalIdent: getCSSModuleLocalIdent
             },
-            'sass-loader'
-        );
+            preProcessor: 'sass-loader'
+        });
 
         /**
          * less
@@ -157,15 +164,15 @@ module.exports = api => {
             .test(lessRegex)
             .exclude.add(lessModuleRegex)
             .end();
-        resolveStyleLoader(
+        resolveStyleLoader({
             webpackChainConfig,
-            'less',
-            {
+            ruleName: 'less',
+            cssOptions: {
                 importLoaders: 2,
                 sourceMap: isEnvProduction && shouldUseSourceMap
             },
-            'less-loader'
-        );
+            preProcessor: 'less-loader'
+        });
 
         /**
          * less module
@@ -174,16 +181,16 @@ module.exports = api => {
             .rule('less-module')
             .test(lessModuleRegex)
             .end();
-        resolveStyleLoader(
+        resolveStyleLoader({
             webpackChainConfig,
-            'less-module',
-            {
+            ruleName: 'less-module',
+            cssOptions: {
                 importLoaders: 2,
                 sourceMap: isEnvProduction && shouldUseSourceMap,
                 modules: true,
                 getLocalIdent: getCSSModuleLocalIdent
             },
-            'less-loader'
-        );
+            preProcessor: 'less-loader'
+        });
     });
 };
