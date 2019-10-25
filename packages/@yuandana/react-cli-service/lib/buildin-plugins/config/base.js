@@ -46,7 +46,7 @@ module.exports = (api, options) => {
         // It requires a trailing slash, or the file assets will get an incorrect path.
         // In development, we always serve from the root. This makes config easier.
         const publicPath = isEnvProduction
-            ? paths.servedPath
+            ? options.publicPath || paths.servedPath
             : isEnvDevelopment && '/';
         // `publicUrl` is just like `publicPath`, but we will provide it to our app
         // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
