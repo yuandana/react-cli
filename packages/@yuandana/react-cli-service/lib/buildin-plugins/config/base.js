@@ -38,6 +38,7 @@ module.exports = (api, options) => {
         // mode === 'test'
 
         const mode = process.env.REACT_CLI_MODE || 'production';
+        const command = process.env.REACT_CLI_COMMAND;
 
         const isEnvDevelopment = mode === 'development';
         const isEnvProduction = mode === 'production';
@@ -45,9 +46,9 @@ module.exports = (api, options) => {
         // Webpack uses `publicPath` to determine where the app is being served from.
         // It requires a trailing slash, or the file assets will get an incorrect path.
         // In development, we always serve from the root. This makes config easier.
-        const publicPath = isEnvProduction
-            ? options.publicPath || paths.servedPath
-            : isEnvDevelopment && '/';
+        const publicPath =
+            options.publicPath ||
+            (isEnvProduction ? paths.servedPath : isEnvDevelopment && '/');
         // `publicUrl` is just like `publicPath`, but we will provide it to our app
         // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
         // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -85,7 +86,7 @@ module.exports = (api, options) => {
         /**
          * webpackConfig.entry
          */
-        if (isEnvDevelopment) {
+        if (isEnvDevelopment && command !== 'build') {
             webpackChainConfig
                 .entry('app')
                 .add(
@@ -103,13 +104,13 @@ module.exports = (api, options) => {
         /**
          * webpackConfig.output
          */
+        let outputPath = api.resolve(options.outputDir) || paths.appDist;
+        if (isEnvDevelopment && command !== 'build') {
+            outputPath = undefined;
+        }
         webpackChainConfig.output
             // The dist folder.
-            .path(
-                isEnvProduction
-                    ? api.resolve(options.outputDir) || paths.appDist
-                    : undefined
-            )
+            .path(outputPath)
             // Add /* filename */ comments to generated require()s in the output.
             .pathinfo(isEnvDevelopment)
             // There will be one main bundle, and one file per asynchronous chunk.
