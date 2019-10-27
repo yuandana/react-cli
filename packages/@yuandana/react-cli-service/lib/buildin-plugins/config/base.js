@@ -104,7 +104,7 @@ module.exports = (api, options) => {
         /**
          * webpackConfig.output
          */
-        let outputPath = api.resolve(options.outputDir) || paths.appDist;
+        let outputPath = api.resolve(options.outputDir || paths.appDist);
         if (isEnvDevelopment && command !== 'build') {
             outputPath = undefined;
         }
