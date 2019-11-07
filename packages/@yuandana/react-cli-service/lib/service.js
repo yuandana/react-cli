@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const readPkg = require('read-pkg');
+const chalk = require('chalk');
 const merge = require('webpack-merge');
 const WebpackChainConfig = require('webpack-chain');
 const { warn, error, isPlugin } = require('@yuandana/react-cli-shared-utils');
