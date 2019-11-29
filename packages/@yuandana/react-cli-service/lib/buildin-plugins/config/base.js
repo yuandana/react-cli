@@ -346,14 +346,14 @@ module.exports = (api, options) => {
         //     .plugin('ModuleNotFoundPlugin')
         //     .use(ModuleNotFoundPlugin, [paths.appPath]);
 
-        // // Makes some environment variables available to the JS code, for example:
-        // // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
-        // // It is absolutely essential that NODE_ENV is set to production
-        // // during a production build.
-        // // Otherwise React will be compiled in the very slow development mode.
-        // webpackChainConfig
-        //     .plugin('DefinePlugin')
-        //     .use(webpack.DefinePlugin, [env.stringified]);
+        // Makes some environment variables available to the JS code, for example:
+        // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
+        // It is absolutely essential that NODE_ENV is set to production
+        // during a production build.
+        // Otherwise React will be compiled in the very slow development mode.
+        webpackChainConfig
+            .plugin('DefinePlugin')
+            .use(webpack.DefinePlugin, [env.stringified]);
 
         if (isEnvDevelopment) {
             // This is necessary to emit hot updates (currently CSS only):
