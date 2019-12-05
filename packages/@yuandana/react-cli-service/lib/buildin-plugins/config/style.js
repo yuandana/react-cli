@@ -43,9 +43,9 @@ const resolveStyleLoader = ({
             plugins: () => [
                 require('postcss-flexbugs-fixes'),
                 require('postcss-preset-env')({
-                    autoprefixer: {
-                        flexbox: 'no-2009'
-                    },
+                    // autoprefixer: {
+                    //     flexbox: 'no-2009'
+                    // },
                     stage: 3
                 }),
                 // Adds PostCSS Normalize as the reset css with default options,
