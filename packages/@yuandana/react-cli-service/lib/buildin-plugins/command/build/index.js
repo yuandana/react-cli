@@ -94,6 +94,7 @@ module.exports = (api, options = {
                             `config to specify target browsers.`
                     );
                 }
+                // console.dir(args, {depth: true})
                 await build(args, api, options);
             }
             delete process.env.REACT_CLI_BUILD_TARGET;
